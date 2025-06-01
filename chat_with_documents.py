@@ -3,7 +3,7 @@ import streamlit as st
 import os
 
 from langchain_openai import OpenAIEmbeddings
-from langchain_community.vectorstores import Chroma
+from langchain_community.vectorstores import FAISS
 
 # loading PDF, DOCX and TXT files as LangChain Documents
 def load_document(file):
@@ -39,7 +39,7 @@ def chunk_data(data, chunk_size=256, chunk_overlap=20):
 # create embeddings using OpenAIEmbeddings() and save them in a Chroma vector store
 def create_embeddings(chunks):
   embeddings = OpenAIEmbeddings() # 512 works as well
-  vector_store = Chroma.from_documents(chunks, embeddings)
+  vector_store = FAISS.from_documents(chunks, embeddings)
   
   # if you want to use a specific directory for chromadb
   # vector_store = Chroma.from_documents(chunks, embeddings, persist_directory='./mychroma_db')
