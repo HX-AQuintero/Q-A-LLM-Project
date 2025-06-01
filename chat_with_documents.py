@@ -1,5 +1,7 @@
 # Install all libraries by running in the terminal: pip install -q -r ./requirements.txt
 import streamlit as st
+import os
+
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import Chroma
 
@@ -73,20 +75,21 @@ def clear_history():
   if 'history' in st.session_state:
     del st.session_state['history']
 
-if __name__ == "__main__":
-  import os
+#if __name__ == "__main__":
+  #import os
 
-  # loading the OpenAI api key from .env
-  #from dotenv import load_dotenv, find_dotenv
-  #load_dotenv(find_dotenv(), override=True)
+# loading the OpenAI api key from .env
+#from dotenv import load_dotenv, find_dotenv
+#load_dotenv(find_dotenv(), override=True)
 
-  st.header('LLM Question-Answering Application 🤖')
-  st.image('img.png')
-  with st.sidebar:
-    # text_input for the OpenAI API key (alternative to python-dotenv and .env)
-    api_key = st.text_input('Open API key:', type='password')
-    if api_key:
-      os.environ['OPENAI_API_KEY'] = api_key
+st.header('LLM Question-Answering Application 🤖')
+
+st.image('img.png')
+with st.sidebar:
+  # text_input for the OpenAI API key (alternative to python-dotenv and .env)
+  api_key = st.text_input('Open API key:', type='password')
+  if api_key:
+    os.environ['OPENAI_API_KEY'] = api_key
 
     # file uploader widget
     uploaded_file = st.file_uploader('Upload a file:', type=['pdf', 'docx', 'txt'])
@@ -123,30 +126,78 @@ if __name__ == "__main__":
         st.session_state.vs = vector_store
         st.success('File uploaded, chunked and embedded successfully.')
 
-  # user's question text input widget
-  q = st.text_input('Ask a question about the content of your file:')
-  if q: # if the user entered a question and hit enter
-    if 'vs' in st.session_state: # if there's the vector store (user uploaded, split and embedded a file)
-      vector_store = st.session_state.vs
-      st.write(f'k: {k}')
-      answer = ask_and_get_answer(vector_store, q, k)
+  else:
+    st.warning("Please enter your OpenAI API Key to continue.")
 
-      # text area widget for the LLM answer
-      st.text_area('LLM Answer: ', value=answer)
-  
-      st.divider()
+# user's question text input widget
+q = st.text_input('Ask a question about the content of your file:')
+if q: # if the user entered a question and hit enter
+  if 'vs' in st.session_state: # if there's the vector store (user uploaded, split and embedded a file)
+    vector_store = st.session_state.vs
+    answer = ask_and_get_answer(vector_store, q, k)
+    
+    st.markdown("""
+        <style>
+        .chat-bubble {
+            max-width: 80%;
+            padding: 10px 15px;
+            margin: 8px;
+            border-radius: 15px;
+            font-size: 15px;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+        .user {
+            background-color: #005c4b;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 0;
+            margin-left: auto;
+            margin-right: 0;
+        }
+        .bot {
+            background-color: #262d31;
+            color: white;
+            align-self: flex-start;
+            border-bottom-left-radius: 0;
+            margin-right: auto;
+            margin-left: 0;
+        }
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-top: 20px;
+            margin-bottom: 30px;
+        }
+        </style>
+    """, unsafe_allow_html=True)
 
-      # if there's no chat history in the session state, create it
-      if 'history' not in st.session_state:
-        st.session_state.history = ''
+    # Mostrar respuesta actual
+    st.markdown('<div class="chat-container">', unsafe_allow_html=True)
+    st.markdown(f'<div class="chat-bubble bot">A: {answer}</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
-      # the current question and answer  
-      value = f'Q: {q} \nA: {answer}'
+    st.divider()
 
-      st.session_state.history = f'{value} \n {"-" * 100} \n {st.session_state.history}'
-      h = st.session_state.history
+    # Historial en sesión
+    if 'history' not in st.session_state:
+      st.session_state.history = ''
 
-      # text area widget for the chat history
-      st.text_area(label='Chat History', value=h, key='history', height=400)
-
+    # Guardar la pregunta y respuesta actuales
+    value = f'Q: {q} \nA: {answer}'
+    st.session_state.history = f'{value} \n {"-" * 100} \n {st.session_state.history}'
+   
+  # Mostrar historial como burbujas
+  h = st.session_state.history
+  historial_items = h.strip().split('-' * 100)
+  st.markdown('<div class="chat-container">', unsafe_allow_html=True)
+  for item in reversed(historial_items):
+    lines = item.strip().split('\n')
+    q_line = next((line for line in lines if line.startswith('Q:')), None)
+    a_line = next((line for line in lines if line.startswith('A:')), None)
+    if q_line and a_line:
+      st.markdown(f'<div class="chat-bubble user">{q_line.strip()}</div>', unsafe_allow_html=True)
+      st.markdown(f'<div class="chat-bubble bot">{a_line.strip()}</div>', unsafe_allow_html=True)
+  st.markdown('</div>', unsafe_allow_html=True)
 # run the app: streamlit run ./chat_with_documents.py
