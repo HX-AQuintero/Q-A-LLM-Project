@@ -7,3 +7,4 @@ pypdf
 streamlit
 chromadb
 tiktoken
+protobuf==3.20.*
