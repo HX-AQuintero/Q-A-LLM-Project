@@ -77,8 +77,8 @@ if __name__ == "__main__":
   import os
 
   # loading the OpenAI api key from .env
-  from dotenv import load_dotenv, find_dotenv
-  load_dotenv(find_dotenv(), override=True)
+  #from dotenv import load_dotenv, find_dotenv
+  #load_dotenv(find_dotenv(), override=True)
 
   st.header('LLM Question-Answering Application 🤖')
   st.image('img.png')
@@ -86,7 +86,7 @@ if __name__ == "__main__":
     # text_input for the OpenAI API key (alternative to python-dotenv and .env)
     api_key = st.text_input('Open API key:', type='password')
     if api_key:
-      os.environ['OPEN_AI_API_KEY'] = api_key
+      os.environ['OPENAI_API_KEY'] = api_key
 
     # file uploader widget
     uploaded_file = st.file_uploader('Upload a file:', type=['pdf', 'docx', 'txt'])
