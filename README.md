@@ -15,6 +15,6 @@ It leverages **OpenAI's GPT models** to generate answers using context retrieved
 
 - Allows users to **upload files** in PDF, DOCX, or TXT format.
 - Automatically **splits and embeds** document content into vector representations.
-- Retrieves the most relevant chunks using Chroma.
+- Retrieves the most relevant chunks using FAISS.
 - Passes them to the OpenAI model to generate **natural language answers**.
 - Displays results interactively through a web interface.
