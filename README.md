@@ -8,7 +8,7 @@ It leverages **OpenAI's GPT models** to generate answers using context retrieved
 
 - **OpenAI**: Provides the underlying LLM (e.g., GPT-3.5-Turbo) used for generating context-aware answers.
 - **LangChain**: Manages the retrieval and QA chain pipeline, enabling smooth integration between language models and document-based search.
-- **Chroma**: Serves as the vector store that indexes document embeddings and supports similarity-based retrieval.
+- **FAISS**: Serves as the vector store that indexes document embeddings and supports similarity-based retrieval.
 - **Streamlit**: Powers the front-end, making the app simple to use via an intuitive web interface without writing any frontend code.
 
 ### 💡 What it does
